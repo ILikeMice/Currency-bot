@@ -11,13 +11,14 @@ BOT_TOKEN = "<your token here>"
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
 
+
 @bot.tree.command(name="exchange", description="View exchange rates for the given currencies")
 async def exchangecurrency(interaction: discord.Interaction, amount:int, fromcur: str, tocur: str):
     try:
         request = requests.get(url=url+fromcur)
-        ans = request.json()["rates"][tocur]
-        embed = discord.embeds.Embed(title=f"Conversion from {fromcur} to {tocur}", 
-                                     description=f"{amount} {fromcur} is equivalent to {ans} {tocur}",
+        ans = request.json()["rates"][tocur.strip().upper()] * amount
+        embed = discord.embeds.Embed(title=f"Conversion from {fromcur.upper()} to {tocur.upper()}", 
+                                     description=f"{amount} {fromcur.upper()} is equivalent to {ans} {tocur.upper()}",
                                      colour=0x2ecc71)
         await interaction.response.send_message(embed=embed, ephemeral=True)
         
@@ -39,9 +40,9 @@ async def currencies(interaction: discord.Interaction):
 async def supported(interaction: discord.Interaction, currency: str):
     request = requests.get(url+"AED").json()
     if currency.strip().upper() in request["rates"]:
-        await interaction.response.send_message(f"Yes, {currency} is supported!", ephemeral=True)
+        await interaction.response.send_message(f"Yes, {currency.upper()} is supported!", ephemeral=True)
     else:
-        await interaction.response.send_message(f"No, {currency} is not supported!", ephemeral=True)
+        await interaction.response.send_message(f"No, {currency.upper()} is not supported!", ephemeral=True)
 
 
 @bot.event
